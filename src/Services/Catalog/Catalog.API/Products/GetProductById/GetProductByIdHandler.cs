@@ -4,7 +4,7 @@ namespace Catalog.API.Products.GetProductById
 
     public record GetProductsByIdQuery(Guid Id) : IQuery<GetProductsByIdResult>;
 
-    public record GetProductsByIdResult(Product Products);
+    public record GetProductsByIdResult(Product Product);
 
 
     internal class GetProductByIdQueryHandler(IDocumentSession session, ILogger<GetProductByIdQueryHandler> logger) 
@@ -14,7 +14,7 @@ namespace Catalog.API.Products.GetProductById
         {
             logger.LogInformation("GetProductByIdQueryHandler.Handle called with {@Query}", query.Id, cancellationToken);
 
-            var product = await session.Query<Product>().FirstOrDefaultAsync(p => p.Id == query.Id, cancellationToken);
+            var product = await session.LoadAsync<Product>(query.Id, cancellationToken);
 
             if (product is null)
             {
